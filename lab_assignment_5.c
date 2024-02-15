@@ -9,15 +9,14 @@ typedef struct node {
 // Returns number of nodes in the linkedList.
 int length(node* head)
 {
-   struct node *tmp = head;
-    int len = 0;
-   while (tmp != NULL)
-   {
-      tmp = tmp->next;
-      len++;
-   }
-
-   return (len);
+	int count = 0;
+	node* temp = head;
+	while (temp != NULL)
+	{
+		count++;
+		temp = temp->next;
+	}
+	return count;
 }
 
 // parses the string in the linkedList
@@ -25,6 +24,27 @@ int length(node* head)
 //  then toCString function wil return "abc"
 char* toCString(node* head)
 {
+	int len = length(head);
+	char* string = (char*)malloc((size_t)(len + 1) * sizeof(char));
+
+	if (string == NULL)
+	{
+		exit(EXIT_FAILURE);
+	}
+	
+	node* temp = head;
+	int i = 0;
+	while (temp != NULL)
+	{
+		string[i] = temp->letter;
+		temp = temp->next;
+		i++;
+	}
+
+	string[i] = '\0';
+	return string;
+
+
 }
 
 // inserts character to the linkedlist
@@ -33,11 +53,42 @@ char* toCString(node* head)
 // head -> |a|->|b|->|c|->|x|
 void insertChar(node** pHead, char c)
 {
+	node* temp = (node*)malloc(sizeof(node));
+    if (temp == NULL)
+    {
+        exit(1); 
+    }
+
+    temp->letter = c;
+    temp->next = NULL;
+
+    if (*pHead == NULL)
+    {
+        // if the list is empty, set the new node as the head
+        *pHead = temp;
+    }
+    else
+    {
+        
+        node* lastNode = *pHead;
+        while (lastNode->next != NULL)
+        {
+            lastNode = lastNode->next;
+        }
+        lastNode->next = temp;
+    }
 }
 
 // deletes all nodes in the linkedList.
 void deleteList(node** pHead)
 {
+	while (*pHead != NULL)
+	{
+		node* temp = *pHead;
+		*pHead = (*pHead)->next;
+		free(temp);
+	}
+	
 }
 
 int main(void)
@@ -57,12 +108,17 @@ int main(void)
 		{
 			fscanf(inFile," %c", &c);
 			insertChar(&head, c);
+			
+			
 		}
 
 		str = toCString(head);
+		
 		printf("String is : %s\n", str);
-
+		//printf("\n \nThe count of nodes is: %d", length(head));
+		
 		free(str);
+		
 		deleteList(&head);
 
 		if (head != NULL)
@@ -71,6 +127,6 @@ int main(void)
 			break;
 		}
 	}
-
+	
 	fclose(inFile);
 }
